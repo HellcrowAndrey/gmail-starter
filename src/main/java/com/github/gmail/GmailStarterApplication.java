@@ -1,4 +1,4 @@
-package com.ggithub.gmail;
+package com.github.gmail;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

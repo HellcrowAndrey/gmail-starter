@@ -1,0 +1,38 @@
+{"groups": [
+  {
+    "name": "emails.app",
+    "type": "com.github.gmail.config.EmailConfig",
+    "sourceType": "com.github.gmail.config.EmailConfig"
+  }
+],"properties": [
+  {
+    "name": "emails.app.name",
+    "type": "java.lang.String",
+    "sourceType": "com.github.gmail.config.EmailConfig"
+  },
+  {
+    "name": "emails.app.credentials.fileName",
+    "type": "java.lang.String",
+    "sourceType": "com.github.gmail.config.EmailConfig"
+  },
+  {
+    "name": "emails.app.accessType",
+    "type": "java.lang.String",
+    "sourceType": "com.github.gmail.config.EmailConfig"
+  },
+  {
+    "name": "emails.app.token.directory.path",
+    "type": "java.lang.String",
+    "sourceType": "com.github.gmail.config.EmailConfig"
+  },
+  {
+    "name": "emails.app.userId",
+    "type": "java.lang.String",
+    "sourceType": "com.github.gmail.config.EmailConfig"
+  },
+  {
+    "name": "emails.app.port",
+    "type": "java.lang.Integer",
+    "sourceType": "com.github.gmail.config.EmailConfig"
+  }
+]}
