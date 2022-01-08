@@ -17,9 +17,9 @@ public class EmailSenderService {
         this.messages = messages;
     }
 
-    public Message send(String userId, MimeMessage message) {
+    public Message send(String userId, MimeMessage payload) {
         try {
-            return this.messages.send(userId, ofMessage(message)).execute();
+            return this.messages.send(userId, ofMessage(payload)).execute();
         } catch (IOException e) {
             throw new ExecuteSendEmailException(e.getMessage());
         }

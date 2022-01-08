@@ -38,10 +38,10 @@ public class EmailConfig {
     @Value(value = "${emails.app.token.directory.path}")
     private String tokenDirectoryPath;
 
-    @Value(value = "${emails.app.userId")
+    @Value(value = "${emails.app.userId}")
     private String userId;
 
-    @Value(value = "${emails.app.port")
+    @Value(value = "${emails.app.port}")
     private Integer port;
 
     @Bean

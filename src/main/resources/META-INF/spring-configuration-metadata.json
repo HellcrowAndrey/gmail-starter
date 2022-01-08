@@ -6,6 +6,11 @@
   }
 ],"properties": [
   {
+    "name": "emails.app.default.enabled",
+    "type": "java.lang.Boolean",
+    "sourceType": "com.github.gmail.config.EmailConfig"
+  },
+  {
     "name": "emails.app.name",
     "type": "java.lang.String",
     "sourceType": "com.github.gmail.config.EmailConfig"
