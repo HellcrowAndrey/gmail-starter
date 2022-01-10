@@ -15,6 +15,10 @@ import java.util.Properties;
 public class EmailMessageUtils {
 
     public static MimeMessage ofEmailWithText(String to, String from, String subject, String bodyText) {
+        return ofEmailWithText(to, from, subject, bodyText, null, "plain");
+    }
+
+    public static MimeMessage ofEmailWithText(String to, String from, String subject, String bodyText, String charset, String subtype) {
         try {
             Properties props = new Properties();
             Session session = Session.getDefaultInstance(props);
@@ -23,7 +27,7 @@ public class EmailMessageUtils {
             email.addRecipient(javax.mail.Message.RecipientType.TO,
                     new InternetAddress(to));
             email.setSubject(subject);
-            email.setText(bodyText);
+            email.setText(bodyText, charset, subtype);
             return email;
         } catch (MessagingException e) {
             throw new CreateEmailException(e.getMessage());
