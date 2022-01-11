@@ -110,7 +110,7 @@ public class EmailConfig {
 
     @Bean
     public EmailSenderService emailSenderService(Gmail gmail) {
-        return new EmailSenderService(gmail.users().messages());
+        return new EmailSenderService(gmail.users().messages(), this.userId);
     }
 
 }
