@@ -13,8 +13,15 @@ public class EmailSenderService {
 
     private final Gmail.Users.Messages messages;
 
-    public EmailSenderService(Gmail.Users.Messages messages) {
+    private final String userId;
+
+    public EmailSenderService(Gmail.Users.Messages messages, String userId) {
         this.messages = messages;
+        this.userId = userId;
+    }
+
+    public Message send(MimeMessage payload) {
+        return send(this.userId, payload);
     }
 
     public Message send(String userId, MimeMessage payload) {
