@@ -20,6 +20,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.*;
+import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.util.List;
 
@@ -29,8 +30,8 @@ public class EmailConfig {
     @Value(value = "${emails.app.name}")
     private String applicationName;
 
-    @Value(value = "${emails.app.credentials.fileName}")
-    private String fileName;
+    @Value(value = "${emails.app.credentials}")
+    private String credentials;
 
     @Value(value = "${emails.app.accessType}")
     private String accessType;
@@ -59,7 +60,7 @@ public class EmailConfig {
         try {
             return GoogleNetHttpTransport.newTrustedTransport();
         } catch (IOException | GeneralSecurityException e) {
-            throw new RuntimeException("Can't create http transport");
+            throw new RuntimeException("Can't create http transport, message: " + e.getMessage());
         }
     }
 
@@ -75,7 +76,7 @@ public class EmailConfig {
             LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(this.port).build();
             return new AuthorizationCodeInstalledApp(flow, receiver).authorize(this.userId);
         } catch (IOException e) {
-            throw new RuntimeException("Can't load credentials");
+            throw new RuntimeException("Can't load credentials, message: " + e.getMessage());
         }
     }
 
@@ -89,8 +90,13 @@ public class EmailConfig {
     @ConditionalOnExpression("${emails.app.default.enabled:true}")
     public GoogleAuthorizationCodeFlow defaultGoogleAuthorizationCodeFlow(NetHttpTransport httpTransport, JsonFactory jsonFactory, List<String> scopes) {
         try {
-            ClassPathResource resource = new ClassPathResource(this.fileName);
-            InputStream in = resource.getInputStream();
+            InputStream in;
+            ClassPathResource resource = new ClassPathResource(this.credentials);
+            if (resource.exists()) {
+                in = resource.getInputStream();
+            } else {
+                in = new FileInputStream(this.credentials);
+            }
             GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(jsonFactory, new InputStreamReader(in));
             return new GoogleAuthorizationCodeFlow.Builder(
                     httpTransport, jsonFactory, clientSecrets, scopes)
@@ -98,7 +104,7 @@ public class EmailConfig {
                     .setAccessType(this.accessType)
                     .build();
         } catch (IOException e) {
-            throw new RuntimeException("Can't create google auth code flow");
+            throw new RuntimeException("Can't create google auth code flow, message: " + e.getMessage());
         }
     }
 

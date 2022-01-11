@@ -16,7 +16,7 @@
     "sourceType": "com.github.gmail.config.EmailConfig"
   },
   {
-    "name": "emails.app.credentials.fileName",
+    "name": "emails.app.credentials",
     "type": "java.lang.String",
     "sourceType": "com.github.gmail.config.EmailConfig"
   },
