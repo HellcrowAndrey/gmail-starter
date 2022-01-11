@@ -14,7 +14,7 @@ import java.util.Properties;
 
 public class EmailMessageUtils {
 
-    private static final String SUBTYPE_HTML = "html";
+    public static final String SUBTYPE_HTML = "html";
 
     public static MimeMessage ofEmailWithText(String to, String from, String subject, String bodyText) {
         return ofEmailWithText(to, from, subject, bodyText, null, "plain");
