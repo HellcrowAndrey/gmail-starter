@@ -16,9 +16,9 @@ import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.GmailScopes;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.*;
@@ -77,10 +77,18 @@ public class EmailConfig {
     }
 
     @Bean
-    public Credential gmailCredential(LocalServerReceiverDecorator localServerReceiverDecorator, GoogleAuthorizationCodeFlow flow) {
+    @ConditionalOnMissingBean(value = AuthorizationCodeInstalledApp.Browser.class)
+    public AuthorizationCodeInstalledApp.Browser browser() {
+        return new AuthorizationCodeInstalledApp.DefaultBrowser();
+    }
+
+    @Bean
+    public Credential gmailCredential(LocalServerReceiverDecorator localServerReceiverDecorator,
+                                      GoogleAuthorizationCodeFlow flow,
+                                      AuthorizationCodeInstalledApp.Browser browser) {
         try {
             LocalServerReceiver receiver = localServerReceiverDecorator.getLocalServerReceiver();
-            return new AuthorizationCodeInstalledApp(flow, receiver).authorize(this.userId);
+            return new AuthorizationCodeInstalledApp(flow, receiver, browser).authorize(this.userId);
         } catch (IOException e) {
             throw new RuntimeException("Can't load credentials, message: " + e.getMessage());
         }
