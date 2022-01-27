@@ -1,5 +1,6 @@
 package com.github.gmail.config;
 
+import com.github.gmail.decorators.LocalServerReceiverDecorator;
 import com.github.gmail.services.EmailSenderService;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -15,12 +16,12 @@ import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.GmailScopes;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.*;
-import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.util.List;
 
@@ -55,6 +56,11 @@ public class EmailConfig {
     }
 
     @Bean
+    public LocalServerReceiverDecorator localServerReceiverDecorator() {
+        return new LocalServerReceiverDecorator(this.port);
+    }
+
+    @Bean
     @ConditionalOnExpression("${emails.app.default.enabled:true}")
     public NetHttpTransport netHttpTransport() {
         try {
@@ -71,10 +77,18 @@ public class EmailConfig {
     }
 
     @Bean
-    public Credential gmailCredential(GoogleAuthorizationCodeFlow flow) {
+    @ConditionalOnMissingBean(value = AuthorizationCodeInstalledApp.Browser.class)
+    public AuthorizationCodeInstalledApp.Browser browser() {
+        return new AuthorizationCodeInstalledApp.DefaultBrowser();
+    }
+
+    @Bean
+    public Credential gmailCredential(LocalServerReceiverDecorator localServerReceiverDecorator,
+                                      GoogleAuthorizationCodeFlow flow,
+                                      AuthorizationCodeInstalledApp.Browser browser) {
         try {
-            LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(this.port).build();
-            return new AuthorizationCodeInstalledApp(flow, receiver).authorize(this.userId);
+            LocalServerReceiver receiver = localServerReceiverDecorator.getLocalServerReceiver();
+            return new AuthorizationCodeInstalledApp(flow, receiver, browser).authorize(this.userId);
         } catch (IOException e) {
             throw new RuntimeException("Can't load credentials, message: " + e.getMessage());
         }
