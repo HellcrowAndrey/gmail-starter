@@ -1,5 +1,6 @@
 package com.github.gmail.config;
 
+import com.github.gmail.decorators.LocalServerReceiverDecorator;
 import com.github.gmail.services.EmailSenderService;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -17,10 +18,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.*;
-import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.util.List;
 
@@ -55,6 +56,11 @@ public class EmailConfig {
     }
 
     @Bean
+    public LocalServerReceiverDecorator localServerReceiverDecorator() {
+        return new LocalServerReceiverDecorator(this.port);
+    }
+
+    @Bean
     @ConditionalOnExpression("${emails.app.default.enabled:true}")
     public NetHttpTransport netHttpTransport() {
         try {
@@ -71,9 +77,9 @@ public class EmailConfig {
     }
 
     @Bean
-    public Credential gmailCredential(GoogleAuthorizationCodeFlow flow) {
+    public Credential gmailCredential(LocalServerReceiverDecorator localServerReceiverDecorator, GoogleAuthorizationCodeFlow flow) {
         try {
-            LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(this.port).build();
+            LocalServerReceiver receiver = localServerReceiverDecorator.getLocalServerReceiver();
             return new AuthorizationCodeInstalledApp(flow, receiver).authorize(this.userId);
         } catch (IOException e) {
             throw new RuntimeException("Can't load credentials, message: " + e.getMessage());
